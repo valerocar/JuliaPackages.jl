@@ -1,9 +1,10 @@
 using Pkg
 Pkg.activate(".")
-using RemoteFiles
+#using RemoteFiles
 using Dash, PlotlyJS
 using CSVFiles
 using DataFrames
+using Dates
 import TOML
 
 function lookup(name)
@@ -41,9 +42,9 @@ function html_break(n)
 end
 
 function load_dataframe(file_name)
-    stats_base = "https://julialang-logs.s3.amazonaws.com/public_outputs/current"
-    r = RemoteFile(stats_base*"/"*file_name, dir=".")
-    download(r)
+    #stats_base = "https://julialang-logs.s3.amazonaws.com/public_outputs/current"
+    #r = RemoteFile(stats_base*"/"*file_name, dir=".")
+    #download(r)
     DataFrame(load(File(format"CSV", "./package_requests_by_date.csv.gz")))
 end
 
@@ -69,21 +70,22 @@ function scatter_by_client(pdf, client_type, data_x, data_y)
     scatter(x=cpdf[:,data_x], y=cpdf[:,data_y], mode="markers+lines", name= client_type)
 end 
 
-function myplot_stats(pdf, data_x, data_y)
-    client_types = setdiff(Set(pdf."client_type"),Set([""]))
-    plot_data = [scatter_by_client(pdf,client,data_x, data_y) for client in client_types]
-    plot(plot_data, layout)
-end
-
 function plot_default()
     fig = scatter(x=[0], y=[0], mode="lines")
     plot(fig, layout)
 end
 
-graph = dcc_graph(id="graph", figure = plot_default())
-go_button = html_button("Search", id="search-button", n_clicks=0)
-app = dash()
+graphs = html_div(style=Dict("width"=>"600px"),[
+    dcc_tabs(id="graphs", value="user", children=[
+        dcc_tab(label="user", value="user"),
+        dcc_tab(label="ci", value="ci"),
+    ]),
+    html_div(id="graph_content")
+])
 
+search_button = html_button("Search", id="search-button", n_clicks=0)
+
+app = dash()
 
 package_input = dcc_input(
         id = "package_input",
@@ -97,29 +99,76 @@ search_gui = html_div(
         package_input,
         html_br(),
         html_br(),
-        go_button,
+        search_button,
         html_br(),
         html_br(),
     ]
+)
+date_picker = dcc_datepickerrange(
+  id="date-picker-range",
+  start_date=DateTime(1997, 5, 3),
+  end_date_placeholder_text="Select a date!"
+)
+
+drop  = dcc_dropdown(id="drop",
+        options = [
+            (label = "PlotlyJS", value = "PlotlyJS"),
+        ],
+        multi = true,
+        value = nothing
 )
 
 app.layout = html_center(
     [
         html_h1("Julia Packages"),
         html_h2("Request Statistics"),
-        html_center(graph),
+        html_center(graphs),
+        
         html_break(2),
-        search_gui
+        search_gui,
+        date_picker, 
+        drop,
+        html_break(2)
     ]
 )
 
-callback!(app, Output("graph", "figure"), Input("search-button", "n_clicks"), State("package_input", "value")) do clicks, input_value
+opts = []
+
+callback!(app, Output("drop","options"), Output("drop","value"), Input("search-button", "n_clicks"), State("package_input", "value")) do clicks, input_value
     package_df = package_dataframe(input_value)
     if package_df === nothing
-        return plot_default()
+        return opts, nothing
     end
-    myplot_stats(package_df, "date", "request_count")
+    append!(opts,[(label = input_value, value = input_value)])
+    opts,input_value
 end
-    
+
+
+function plot_graphs(options, client_type)
+    if options !== nothing
+        if typeof(options) == String
+            plot_data = [scatter_by_client(package_dataframe(options),client_type, "date", "request_count")]
+            return plot(plot_data, layout)
+        else
+            plot_data = [scatter_by_client(package_dataframe(op),client_type, "date", "request_count") for op in options]            
+            return plot(plot_data, layout)
+        end
+    end
+    return plot_default()
+end
+   
+callback!(
+  app, Output("graph_content", "children"), 
+  Input("graphs", "value"),Input("drop","value"))  do graph, options
+    #println(options)
+    if graph == "user"
+      return dcc_graph(id="graph_us", figure = plot_graphs(options,"user"))
+    else
+      return dcc_graph(id="graph_ci", figure = plot_graphs(options,"ci"))
+    end
+end
+
 run_server(app, "0.0.0.0", debug=true)
 
+ 
+ 
