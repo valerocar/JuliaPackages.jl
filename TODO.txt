@@ -1,0 +1,16 @@
+
+Graph Names: 10mins
+
+11:10-11:30 first moving averages test and research linear regression (20mins)
+11:40-12:05 Linear regression with dates (25mins)
+
+TODO: How to do linear regression with dates?
+
+Regression and moving averages over a certain date range (control panel)
+Total statistics: Total requests (users and ci) proportion
+
+Make sure to use dash bootstrap components also
+
+---------------------------------------
+Post the app to Heroku. 
+Please send a link to packages app when deployed!
