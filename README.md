@@ -14,3 +14,5 @@ julia> include("app.jl")
 ```
 
 and then opening your browser at http://localhost:8050/
+
+You can find a Heroku deployment of this app at https://julia-packages-app.herokuapp.com/
