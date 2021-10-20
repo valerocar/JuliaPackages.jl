@@ -1,6 +1,0 @@
-
-
-9:10-9:15 Fixed input to be mor intuitive
-
-
-TODO: Remove selection from input search
