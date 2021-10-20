@@ -35,15 +35,9 @@ version = "1.0.1"
 
 [[ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
-git-tree-sha1 = "2f294fae04aa5069a67964a3366e151e09ea7c09"
+git-tree-sha1 = "8d954297bc51cc64f15937c2093799c3617b73e4"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.9.0"
-
-[[CodeTracking]]
-deps = ["InteractiveUtils", "UUIDs"]
-git-tree-sha1 = "9aa8a5ebb6b5bf469a7e0e2b5202cf6f8c291104"
-uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
-version = "1.0.6"
+version = "1.10.0"
 
 [[CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -85,10 +79,10 @@ uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 version = "4.0.4"
 
 [[Dash]]
-deps = ["CodecZlib", "DashBase", "DashCoreComponents", "DashHtmlComponents", "DashTable", "DataStructures", "HTTP", "JSON", "JSON2", "MD5", "Pkg", "PlotlyBase", "Sockets", "Test", "UUIDs", "YAML"]
-git-tree-sha1 = "ea9eb2d7c841c72d6dd3994332eaf7e90973a2e6"
+deps = ["CodecZlib", "DashBase", "DashCoreComponents", "DashHtmlComponents", "DashTable", "DataStructures", "HTTP", "JSON", "JSON2", "MD5", "PlotlyBase", "Sockets", "Test", "UUIDs"]
+git-tree-sha1 = "d5afc7e1816c535b9023d3ae0154c6af3def6d7b"
 uuid = "1b08a953-4be3-4667-9a23-3db579824955"
-version = "1.0.0"
+version = "0.1.6"
 
 [[DashBase]]
 deps = ["JSON2", "Test"]
@@ -96,20 +90,29 @@ git-tree-sha1 = "fc7632ba6b4f1c085620870142114f428f51eff0"
 uuid = "03207cf0-e2b3-4b91-9ca8-690cf0fb507e"
 version = "0.1.0"
 
+[[DashBootstrapComponents]]
+deps = ["Dash"]
+git-tree-sha1 = "557e2f910533a75c13b9a951faf60f19b8e7de4e"
+uuid = "1b08a953-4be3-4667-9a23-fa6d05876a1e"
+version = "0.13.1"
+
 [[DashCoreComponents]]
-git-tree-sha1 = "f50f65803f79f4d131a1dad8843fcd51c7c71f7d"
+deps = ["DashBase"]
+git-tree-sha1 = "8af600ca3179b193698472376a133c1caf3f2adc"
 uuid = "1b08a953-4be3-4667-9a23-9da06441d987"
-version = "2.0.0"
+version = "1.17.1"
 
 [[DashHtmlComponents]]
-git-tree-sha1 = "972f71ee6c3c22841cdc6a44eca6117fb843c86c"
+deps = ["DashBase"]
+git-tree-sha1 = "14ad028d5a5fa708589e38cf05ff853ab0bac7f5"
 uuid = "1b08a953-4be3-4667-9a23-24100242a84a"
-version = "2.0.0"
+version = "1.1.4"
 
 [[DashTable]]
-git-tree-sha1 = "923491df78fc9b36191162f0f0f4b0c38467a5db"
+deps = ["DashBase"]
+git-tree-sha1 = "e2be29d5b901ff46c5661f407d83a541625cd1a0"
 uuid = "1b08a953-4be3-4667-9a23-f0e2ba4deb9a"
-version = "5.0.0"
+version = "4.12.0"
 
 [[DataAPI]]
 git-tree-sha1 = "cc70b17275652eb47bc9e5f81635981f13cea5c8"
@@ -205,9 +208,9 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[GenericLinearAlgebra]]
 deps = ["LinearAlgebra", "Printf", "Random"]
-git-tree-sha1 = "eddbb6ee8fe2c3244a2c973874a3179c3c4d3ac5"
+git-tree-sha1 = "ac44f4f51ffee9ff1ea50bd3fbb5677ea568d33d"
 uuid = "14197337-ba66-59df-a3e3-ca00e7dcff7a"
-version = "0.2.6"
+version = "0.2.7"
 
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "Logging", "MbedTLS", "NetworkOptions", "Sockets", "URIs"]
@@ -288,12 +291,6 @@ git-tree-sha1 = "dcc3c2d9bdc036677a031ea97b76925983ca1f18"
 uuid = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
 version = "0.3.4"
 
-[[JuliaInterpreter]]
-deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "e273807f38074f033d94207a201e6e827d8417db"
-uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.8.21"
-
 [[Kaleido_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "2ef87eeaa28713cb010f9fb0be288b6c1a4ecd53"
@@ -334,12 +331,6 @@ uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
 [[Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
-[[Libiconv_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "42b62845d70a619f063a7da093d995ec8e15e778"
-uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
-version = "1.16.1+1"
-
 [[LinearAlgebra]]
 deps = ["Libdl"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -352,12 +343,6 @@ version = "0.3.3"
 
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
-
-[[LoweredCodeUtils]]
-deps = ["JuliaInterpreter"]
-git-tree-sha1 = "491a883c4fef1103077a7f648961adbf9c8dd933"
-uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "2.1.2"
 
 [[MD5]]
 deps = ["Random", "SHA"]
@@ -411,9 +396,9 @@ version = "1.0.10"
 
 [[MutableArithmetics]]
 deps = ["LinearAlgebra", "SparseArrays", "Test"]
-git-tree-sha1 = "372e3a76d969e651ca70eb647bf0e303bc95d615"
+git-tree-sha1 = "8d9496b2339095901106961f44718920732616bb"
 uuid = "d8a4904e-b15c-11e9-3269-09a3773c0cb0"
-version = "0.2.21"
+version = "0.2.22"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Pkg", "Sockets", "WebSockets"]
@@ -503,9 +488,9 @@ version = "1.2.2"
 
 [[PrettyTables]]
 deps = ["Crayons", "Formatting", "Markdown", "Reexport", "Tables"]
-git-tree-sha1 = "69fd065725ee69950f3f58eceb6d144ce32d627d"
+git-tree-sha1 = "d940010be611ee9d67064fe559edbb305f8cc0eb"
 uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "1.2.2"
+version = "1.2.3"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -535,17 +520,17 @@ git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
 
+[[RemoteFiles]]
+deps = ["Dates", "FileIO", "HTTP"]
+git-tree-sha1 = "54527375d877a64c55190fb762d584f927d6d7c3"
+uuid = "cbe49d4c-5af1-5b60-bb70-0a60aa018e1b"
+version = "0.4.2"
+
 [[Requires]]
 deps = ["UUIDs"]
 git-tree-sha1 = "4036a3bd08ac7e968e27c203d45f5fff15020621"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.1.3"
-
-[[Revise]]
-deps = ["CodeTracking", "Distributed", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "Pkg", "REPL", "Requires", "UUIDs", "Unicode"]
-git-tree-sha1 = "41deb3df28ecf75307b6e492a738821b031f8425"
-uuid = "295af30f-e4ad-537b-8983-00126c2a3abe"
-version = "3.1.20"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -572,19 +557,13 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SpecialFunctions]]
 deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "793793f1df98e3d7d554b65a107e9c9a6399a6ed"
+git-tree-sha1 = "2d57e14cd614083f132b6224874296287bfa3979"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "1.7.0"
+version = "1.8.0"
 
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-
-[[StringEncodings]]
-deps = ["Libiconv_jll"]
-git-tree-sha1 = "50ccd5ddb00d19392577902f0079267a72c5ab04"
-uuid = "69024149-9ee7-55f6-a4c4-859efe599b68"
-version = "0.3.5"
 
 [[TOML]]
 deps = ["Dates"]
@@ -630,9 +609,9 @@ version = "1.0.2"
 
 [[TimeZones]]
 deps = ["Dates", "Downloads", "InlineStrings", "LazyArtifacts", "Mocking", "Pkg", "Printf", "RecipesBase", "Serialization", "Unicode"]
-git-tree-sha1 = "9408d0773ed2dbfba68ebc0e2d5dd388a5e668a9"
+git-tree-sha1 = "b4c6460412b1db0b4f1679ab2d5ef72568a14a57"
 uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
-version = "1.6.0"
+version = "1.6.1"
 
 [[TranscodingStreams]]
 deps = ["Random", "Test"]
@@ -686,12 +665,6 @@ deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
 git-tree-sha1 = "80661f59d28714632132c73779f8becc19a113f2"
 uuid = "cc8bc4a8-27d6-5769-a93b-9d913e69aa62"
 version = "0.6.4"
-
-[[YAML]]
-deps = ["Base64", "Dates", "Printf", "StringEncodings"]
-git-tree-sha1 = "3c6e8b9f5cdaaa21340f841653942e1a6b6561e5"
-uuid = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-version = "0.4.7"
 
 [[Zlib_jll]]
 deps = ["Libdl"]

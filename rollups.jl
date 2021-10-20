@@ -3,29 +3,6 @@ using RemoteFiles
 stats_base = "https://julialang-logs.s3.amazonaws.com/public_outputs/current/"
 ext = ".csv.gz"
 
-@RemoteFileSet ALL "All" begin
-    client_types = @RemoteFile stats_base*"client_types"*ext
-    client_types_by_region = @RemoteFile stats_base*"client_types_by_region"*ext
-    client_types_by_date = @RemoteFile stats_base*"client_types_by_date"*ext
-    client_types_by_region_by_date = @RemoteFile stats_base*"client_types_by_region_by_date"*ext
-    julia_systems = @RemoteFile stats_base*"julia_systems"*ext
-    julia_systems_by_region = @RemoteFile stats_base*"julia_systems_by_region"*ext
-    julia_systems_by_date = @RemoteFile stats_base*"julia_systems_by_date"*ext
-    julia_systems_by_region_by_date = @RemoteFile stats_base*"julia_systems_by_region_by_date"*ext
-    julia_versions = @RemoteFile stats_base*"julia_versions"*ext
-    julia_versions_by_region = @RemoteFile stats_base*"julia_versions_by_region"*ext
-    julia_versions_by_date = @RemoteFile stats_base*"julia_versions_by_date"*ext
-    julia_versions_by_region_by_date = @RemoteFile stats_base*"julia_versions_by_region_by_date"*ext
-    resource_types = @RemoteFile stats_base*"resource_types"*ext
-    resource_types_by_region = @RemoteFile stats_base*"resource_types_by_region"*ext
-    resource_types_by_date = @RemoteFile stats_base*"resource_types_by_date"*ext
-    resource_types_by_region_by_date = @RemoteFile stats_base*"resource_types_by_region_by_date"*ext
-    package_requests = @RemoteFile stats_base*"package_requests"*ext
-    package_requests_by_region = @RemoteFile stats_base*"package_requests_by_region"*ext
-    package_requests_by_date = @RemoteFile stats_base*"package_requests_by_date"*ext
-    package_requests_by_region_by_date = @RemoteFile stats_base*"package_requests_by_region_by_date"*ext
-end
-
 all_rollups = [
 "client_types",
 "client_types_by_region",
@@ -48,7 +25,3 @@ all_rollups = [
 "package_requests_by_date",
 "package_requests_by_region_by_date"
 ]
-
-#for r in rollups
-#    println(r*" = @RemoteFile stats_base*\"$r\"*ext")
-#end
