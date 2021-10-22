@@ -12,166 +12,173 @@ include("utils.jl")
 # App begins
 df = load_dataframe()
 
-app = dash(external_stylesheets=[dbc_themes.COSMO])
+app = dash(external_stylesheets = [dbc_themes.COSMO])
+app.title = "Julia Packages Requests"
 
-description = dcc_markdown(
-raw"This Julia Dash App shows the requests of Julia packages made by clients during period of time. 
-We consider two types of requests: 
-
-1. Those made by standard users 
-2. Those that arise from continuous integration runs (ci runs)
-
-For a given package the data is represented as curves under the *standard users* and *ci runs* tabs. We also add a seven 
-day moving average curve μ and linear regression line L. It is 
-possible to compare request curves for different packages by using the dropdown menu under the search controls. In 
-this case (and to avoid clutter) we don't plot the moving average curves nor the regression lines.
-"
-)
+description = dcc_markdown("Hello")
 
 title = dbc_row(
     dbc_col(
-        dbc_jumbotron(html_center(html_h1("Julia Packages Requests")), className="bmi-jumbotron")
-    ), className="mt-3",
+        dbc_alert(
+            color = "primary",
+            html_center(
+                html_div(
+                    style = Dict("vertical-alight" => "middle"),
+                    html_h1("Julia Packages Requests"),
+                ),
+            ),
+            className = "bmi-jumbotron",
+        ),
+    ),
+    className = "mt-3",
 )
-
-users_tab = dbc_card(
-    dbc_cardbody([
-        html_p("This is tab 1!", className="card-text"),
-        dbc_button("Click here", color="success"),
-    ]),
-    className="mt-3",
-);
-
-ci_tab = dbc_card(
-    dbc_cardbody([
-        html_p("This is tab 2!", className="card-text"),
-        dbc_button("Don't click here", color="danger"),
-    ]),
-    className="mt-3",
-);
-
-help_tab = dbc_card(
-    dbc_cardbody([
-        description,
-    ]),
-    className="mt-3",
-);
-
 
 info_card = dbc_card(
     [
         dbc_cardheader("Requests Statistics")
-        dbc_cardbody(
-            [
-                html_div(id="info-data",
-                    [
-                        html_p("Info Data")
-                    ]
-                )
-            ]
-        )
-    ], className="card-tiny"
+        dbc_cardbody([html_div(id = "info-data", [html_p("Info Data")])])
+    ],
+    className = "card-tiny",
 )
+
+ttip = dbc_tooltip(
+"Enter a Julia package name and press the search button",
+target = "hola")
 
 tabs = dbc_row(
     [
         dbc_col(
-            html_div(
-                [
-                    dbc_tabs(
-                        [
-                            dbc_tab(label="Standard user", tab_id="user"),
-                            dbc_tab(label="Ci runs", tab_id="ci"),
-                            dbc_tab(label="Help", tab_id="help"),
-                        ],
-                        id="tabs",
-                        active_tab="user",
-                    ),
-        html_div(id="graph-content"),
-                ]
-            ),width=8
+            html_div([
+                dbc_tabs(
+                    [
+                        dbc_tab(label = "Users", tab_id = "user",id="hola"),
+                        dbc_tab(label = "CI runs", tab_id = "ci"),
+                    ],
+                    id = "tabs",
+                    active_tab = "user",
+                ),
+                html_div(id = "graph-content")
+            ]),
+            width = 8,
         )
-        dbc_col(info_card,width=4)
-    ]
+        dbc_col(info_card, width = 4)
+    ],
 );
 
 
-date_picker = dcc_datepickerrange(id="dates", start_date=df."date"[begin],end_date=df."date"[end])
+date_picker = dcc_datepickerrange(id = "dates", start_date = df."date"[begin], end_date = df."date"[end])
 
-input = dbc_row(
-    [
-        dbc_col(
-            date_picker,
-            width = 4
-        ),
-        dbc_col(
-            dbc_input(id="search-input", placeholder="Enter package name......", type="text"),
-            width = 3
-        ),
-        dbc_col(
-            dbc_button("Seach", id="search-button", color="primary", className="mr-1"),
-            width = 2
-        )
-    ]
+
+
+
+
+date_input = dbc_inputgroup([dbc_inputgrouptext(id="date-range","Date range"), date_picker,
+dbc_tooltip(
+"Select a date range for the request's data",
+target = "date-range")])
+
+search_input = dbc_inputgroup([
+    dbc_inputgrouptext("Package",id="package-label"),
+    dbc_input(id = "search-input", placeholder = "name"),
+    dbc_tooltip(
+    "Enter a Julia package name and press the search button",
+    target = "package-label"),
+    dbc_button("Search", color = "primary", id = "search-button"),
+])
+
+
+drop = dcc_dropdown(
+    id = "drop",
+    options = [(label = "PlotlyJS", value = "PlotlyJS")],
+    style=Dict("width"=>"300px"),
+    multi = true,
+    value = nothing,
 )
 
+packages_input = dbc_row([
+    dbc_col(search_input, width = 4),
+    dbc_col(dbc_inputgroup([dbc_inputgrouptext("Select",id="multi"), drop]), width = 8),
+    dbc_tooltip(
+    "Select one or more of the searched package(s) to render",
+    target = "multi")
+])
 
 
-drop = dbc_row(
-    dbc_col(dcc_dropdown(id="drop",
-                options = [(label = "PlotlyJS", value = "PlotlyJS")],
-                multi = true,
-                value = nothing
-            ), width=8,
 
-    )
-)
-
+drop_input = dbc_row(dbc_col(date_input, width = 6))
 opts = []
 
-callback!(app, Output("drop","options"), Output("drop","value"), Output("search-input","value"), Input("search-button", "n_clicks"), State("search-input", "value")) do clicks, input_value
-    package_df = package_dataframe(input_value)
+callback!(
+    app,
+    Output("drop", "options"),
+    Output("drop", "value"),
+    Output("search-input", "value"),
+    Input("search-button", "n_clicks"),
+    State("search-input", "value"),
+) do clicks, input_value
+    value = input_value
+    if value !== nothing
+        value = split(input_value, ".")[1] # To strip .jl part
+    end
+    package_df = package_dataframe(value)
     if package_df === nothing
         return opts, nothing, ""
     end
-    append!(opts,[(label = input_value, value = input_value)])
+    append!(opts, [(label = value, value = value)])
     opts_set = Set(opts)
     opts_new = [o for o in opts_set]
-    opts_new, input_value, ""
+    opts_new, value, ""
 end
 
+checks = dbc_checklist(
+    id = "checks",
+    options = [
+        Dict("label" => "Cumulative", "value" => "CU"),
+        Dict("label" => "Regression Line", "value" => "RL"),
+        Dict("label" => "Seven days moving averages", "value" => "MA"),
+    ],
+    value = [],
+    labelStyle = Dict("display" => "inline-block"),
+)
+
 callback!(
-  app, 
-  Output("graph-content", "children"), 
-  Output("info-data", "children"),
-  Input("tabs", "active_tab"),
-  Input("drop","value"),
-  Input("dates","start_date"),
-  Input("dates","end_date")
-  )  do at, options, start_date, end_date
+    app,
+    Output("graph-content", "children"),
+    Output("info-data", "children"),
+    Input("tabs", "active_tab"),
+    Input("drop", "value"),
+    Input("dates", "start_date"),
+    Input("dates", "end_date"),
+    Input("checks", "value"),
+) do at, options, sd, ed, check_vals
     if at == "user"
-        figure, info = plot_graphs(options,"user",start_date=start_date, end_date=end_date)
-        graph = dcc_graph(id="graph_us", figure = figure)
+        figure, info = plot_graphs(options, check_vals, "user", start_date = sd, end_date = ed)
+        graph = dcc_graph(id = "graph_us", figure = figure)
         return graph, info
     elseif at == "ci"
-        figure, info = plot_graphs(options,"ci",start_date=start_date, end_date=end_date)
-        graph = dcc_graph(id="graph_ci", figure = figure)
+        figure, info = plot_graphs(options, check_vals, "ci", start_date = sd, end_date = ed)
+        graph = dcc_graph(id = "graph_ci", figure = figure)
         return graph, info
-    elseif at == "help"
-        info = [""]
-        return help_tab, info
     else
         html_p("This shouldn't ever be displayed..."), ["Error!"]
     end
 end
 
+
 app.layout = dbc_container(
-    [title
-    dbc_spinner(tabs)
-    html_br()
-    input
-    html_br()
-    drop]
+    [
+        title
+        html_br()
+        packages_input
+        html_br()
+        drop_input
+        html_br()
+        html_br()
+        dbc_spinner(tabs)
+        checks
+        html_br()
+        html_br()
+    ]
 )
 
-run_server(app, "0.0.0.0", debug=false)
+run_server(app, "0.0.0.0", debug = true)

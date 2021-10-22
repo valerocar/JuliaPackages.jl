@@ -1,0 +1,5 @@
+1. Add instructions to each input
+2. Stats for multiple selections
+3. Put cumulative and normal in radio buttons
+4. Check definition function for 7 days averages
+5. Correct documents
