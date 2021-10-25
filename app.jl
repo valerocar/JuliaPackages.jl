@@ -256,7 +256,7 @@ app.layout = dbc_container(
         html_br()
         packages_input
         html_br()
-        dbc_row([dbc_col(checks, width = 6), dbc_col(mode2, width = 6)])
+        dbc_row([dbc_col(checks, width = 4), dbc_col(mode2, width = 8)])
         html_br()
         drop_input
         html_br()
