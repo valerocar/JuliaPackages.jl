@@ -34,14 +34,18 @@ title = dbc_row(
 
 
 
-ttip = dbc_tooltip("Enter a Julia package name and press the search button", target = "hola")
+ttip =
+    dbc_tooltip("Enter a Julia package name and press the search button", target = "hola")
 
 graph = dcc_graph(id = "graph", figure = plot_default())
 
 graph_content = html_div([
     dbc_row([dbc_col(graph, width = 12)]),
     html_br(),
-    dbc_row([dbc_col(html_div(id="info-content1",["Info1"]), width = 6), dbc_col(html_div(id="info-content2",["Info2"]), width = 6)]),
+    dbc_row([
+        dbc_col(html_div(id = "info-content1", ["Info1"]), width = 6),
+        dbc_col(html_div(id = "info-content2", ["Info2"]), width = 6),
+    ]),
 ])
 
 tabs = dbc_row([
@@ -100,7 +104,11 @@ drop2 = dcc_dropdown(
     value = "REG",
 )
 
-mode2  = dbc_inputgroup([dbc_inputgrouptext("Mode", id = "mode2"), drop2, dbc_tooltip("Select plot type", target = "mode2")])
+mode2 = dbc_inputgroup([
+    dbc_inputgrouptext("Mode", id = "mode2"),
+    drop2,
+    dbc_tooltip("Select plot type", target = "mode2"),
+])
 
 packages_input = dbc_row([
     dbc_col(search_input, width = 4),
@@ -152,42 +160,52 @@ function package_global_stats(name, stats)
     total_requests = stats["total"]
     interval = stats["interval"]
     precision = 2
-    daily_average = round(total_requests/interval, digits = precision)
+    daily_average = round(total_requests / interval, digits = precision)
     α = stats["α"]
     β = stats["β"]
     dbc_card(
         [
             dbc_cardbody([
                 html_h4("$(name) global statistics", className = "card-title"),
-                html_div([
-                    html_p("Total requests: $total_requests"),
-                    html_p("Time interval: $interval days"),
-                    html_p("Daily average: $daily_average"),
-                    html_p("Regression slope: $β"),
-                ],className = "card-text",)
-                
+                html_div(
+                    [
+                        html_p("Total requests: $total_requests"),
+                        html_p("Time interval: $interval days"),
+                        html_p("Daily average: $daily_average"),
+                        html_p("Regression slope: $β"),
+                    ],
+                    className = "card-text",
+                ),
             ]),
         ],
         style = Dict("width" => "12rem"),
     )
-end 
+end
 
 function packages_info_table(packages, stats)
-    table_header = [html_thead(html_tr([html_th("Package"), html_th("Daily average"), html_th("Regression slope")]))];
+    table_header = [
+        html_thead(
+            html_tr([
+                html_th("Package"),
+                html_th("Daily average"),
+                html_th("Regression slope"),
+            ]),
+        ),
+    ]
     rows = []
     for (i, name) in enumerate(packages)
         s = stats[i]
         total = s["total"]
         interval = s["interval"]
         precision = 2
-        daily_average = round(total/interval, digits = precision)
+        daily_average = round(total / interval, digits = precision)
         β = s["β"]
-        row = html_tr([html_td(name), html_td("$daily_average"),html_td("$β")]);
+        row = html_tr([html_td(name), html_td("$daily_average"), html_td("$β")])
         append!(rows, [row])
-    end 
+    end
 
-    table_body = [html_tbody(rows)];
-    dbc_table([table_header; table_body], bordered = true);
+    table_body = [html_tbody(rows)]
+    dbc_table([table_header; table_body], bordered = true)
 end
 
 
@@ -201,23 +219,27 @@ callback!(
     Input("dates", "start_date"),
     Input("dates", "end_date"),
     Input("checks", "value"),
-    Input("drop2","value")
+    Input("drop2", "value"),
 ) do at, options, sd, ed, check_vals, drop2_val
+    println(options)
+    if (options === nothing) || (length(options) == 0)
+        return plot_default(), [""], [""]
+    end
     if typeof(options) === String
         options = [options]
     end
     figure, c_figure, stats_info =
         plot_graphs(options, check_vals, at, start_date = sd, end_date = ed)
-    
+
     fout = figure
     if drop2_val == "CMT"
         fout = c_figure
     end
     info1 = [""]
     info2 = [""]
-    if options !== nothing 
+    if options !== nothing
         if length(options) == 1
-            info1 = [package_global_stats(options[1],stats_info[1])]
+            info1 = [package_global_stats(options[1], stats_info[1])]
         else
             vals = [s["total"] for s in stats_info]
             figure = plot(pie(values = vals, labels = options, marker_colors = colors))
@@ -234,7 +256,7 @@ app.layout = dbc_container(
         html_br()
         packages_input
         html_br()
-        dbc_row([dbc_col(checks,width=6),dbc_col(mode2,width=6)])
+        dbc_row([dbc_col(checks, width = 6), dbc_col(mode2, width = 6)])
         html_br()
         drop_input
         html_br()
