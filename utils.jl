@@ -5,6 +5,21 @@ using RemoteFiles
 PlotElement = GenericTrace{Dict{Symbol,Any}}
 PlotArray(; n = 0) = Vector{PlotElement}(undef, n)
 
+colors = 
+[
+    "#1f77b4",  # muted blue
+    "#ff7f0e",  # safety orange
+    "#2ca02c",  # cooked asparagus green
+    "#d62728",  # brick red
+    "#9467bd",  # muted purple
+    "#8c564b",  # chestnut brown
+    "#e377c2",  # raspberry yogurt pink
+    "#7f7f7f",  # middle gray
+    "#bcbd22",  # curry yellow-green
+    "#17becf"   # blue-teal
+]
+
+
 function load_dataframe()
     file_name = "package_requests_by_date.csv.gz"
     stats_base = "https://julialang-logs.s3.amazonaws.com/public_outputs/current"
@@ -50,8 +65,18 @@ layout = Layout(;
     width = 600,
     height = 400,
     xaxis = attr(title = "Date"),
-    yaxis = attr(title = "Requests Count"),
+    yaxis = attr(title = "Requests"),
 )
+
+c_layout = Layout(;
+    title = "",
+    width = 500,
+    height = 400,
+    xaxis = attr(title = "Date"),
+    yaxis = attr(title = "Cumulative Requests"),
+)
+
+
 
 function package_dataframe(package_name)
     result = lookup(package_name)
@@ -81,9 +106,10 @@ function scatter_by_client(
     data_x,
     data_y,
     check_vals;
-    name = "",
     start_date = nothing,
     end_date = nothing,
+    name = "",
+    color="green"
 )
     mask = (pdf."client_type" .== client_type)
     if start_date !== nothing
@@ -101,86 +127,63 @@ function scatter_by_client(
     y = cpdf[:, data_y]
     days = Dates.value(x[end] - x[begin])
     total_requests = sum(y)
-    if "CU" in check_vals
-        info = [html_div([
-            html_p("Total : $total_requests")
-            html_p("Time Interval : $days days")
-        ])]
-        return [scatter(x = x, y = cumsum(y), mode = "markers+lines", name = name)], info
-    end
     # Moving averages
     my = movingaverage(y, 7)
     ly, β, α = linear_regression(x, y)
 
-    precision = 6
+    precision = 4
     α = round(α, digits = precision)
     β = round(β, digits = precision)
     μ = round(sum(y) / days, digits = precision)
-    info = [
-        html_div(
-            [
-                html_p("Total requests : $total_requests")
-                html_p("Time Interval : $days days")
-                html_p("Daily average : $μ")
-                #html_p("Std deviation : $sdev")
-                #html_p("Regression slope : $β")
-            ],
-        ),
-    ]
-    info_new = Dict("total" => total_requests, "interval" => days,"α" => α, "β" => β)
+
+    info = Dict("total" => total_requests, "interval" => days, "α" => α, "β" => β)
 
     extra_plots = Dict(
-        "MA" => scatter(x = x, y = my, mode = "lines", name = "μ", showlegend = false),
-        "RL" => scatter(x = x, y = ly, mode = "lines", name = "L", showlegend = false),
+        "MA" => scatter(x = x, y = my, mode = "lines", name = "μ", showlegend = false, line_color=color, line_width=1.5),
+        "RL" => scatter(x = x, y = ly, mode = "lines", name = "L", showlegend = false, line_color=color, line_width=2),
     )
-    plots = [scatter(x = x, y = y, mode = "markers+lines", name = name)]
+    plots = [scatter(x = x, y = y, mode = "lines+markers", name = name, line_color=color,line_width=2)]
     append!(plots, [extra_plots[k] for k in check_vals])
-    return plots, info
+    c_plots = [scatter(x = x, y = cumsum(y), mode = "lines", name = name, line_color=color)]
+    return plots, c_plots, info
 end
 
-function plot_default()
+function plot_default(;cumulative = false)
     fig = scatter(x = [0], y = [0], mode = "lines")
-    plot(fig, layout)
+    lo = layout
+    if cumulative
+        lo = c_layout
+    end
+    plot(fig, lo)
 end
 
 
 function plot_graphs(options, check_vals, client_type; start_date = nothing, end_date = nothing)
     if (options !== nothing)
         if length(options) == 0
-            return plot_default(), [""]
+            return plot_default()
         end
-        if length(options) == 1
-            options = options[1]
-        end
-        if typeof(options) == String
-            plot_data, info = scatter_by_client(
-                package_dataframe(options),
+        plot_data = PlotArray()
+        c_plot_data = PlotArray()
+        stats_info = []
+        
+        for (i,op) in enumerate(options)
+            plots, cu, info = scatter_by_client(
+                package_dataframe(op),
                 client_type,
                 "date",
                 "request_count",
                 check_vals,
                 start_date = start_date,
                 end_date = end_date,
-                name = options,
+                name = op,
+                color=colors[i]
             )
-            return plot(plot_data, layout), info
-        else
-            plot_data = PlotArray()
-            for op in options
-                plots, info = scatter_by_client(
-                    package_dataframe(op),
-                    client_type,
-                    "date",
-                    "request_count",
-                    check_vals,
-                    start_date = start_date,
-                    end_date = end_date,
-                    name = op,
-                )
-                append!(plot_data, plots)
-            end
-            return plot(plot_data, layout), [""]
+            append!(plot_data, plots)
+            append!(c_plot_data, cu)
+            append!(stats_info, [info])
         end
+        return plot(plot_data, layout), plot(c_plot_data, c_layout), stats_info
     end
-    return plot_default(), [""]
+    return plot_default(), plot_default(cumulative=true), []
 end
