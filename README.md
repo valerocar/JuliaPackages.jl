@@ -4,7 +4,7 @@ This Julia-Dash App produces graphs of the request statistics for Julia Packages
 
 ![Julia Packages App](JuliaPackages.gif)
 
-You can run the app with
+You can run the app from the command line & Julia REPL by typing
 
 ```
 $ git clone https://github.com/valerocar/JuliaPackages.jl
