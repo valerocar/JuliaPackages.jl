@@ -1,5 +1,5 @@
 using PlotlyJS
-using RemoteFiles
+import Downloads
 
 # For createing plot elements and arrays
 PlotElement = GenericTrace{Dict{Symbol,Any}}
@@ -23,8 +23,8 @@ colors =
 function load_dataframe()
     file_name = "package_requests_by_date.csv.gz"
     stats_base = "https://julialang-logs.s3.amazonaws.com/public_outputs/current"
-    r = RemoteFile(stats_base * "/" * file_name, dir = ".")
-    download(r)
+    r = stats_base * "/" * file_name
+    Downloads.download(r,"$(@__DIR__)/$file_name") 
     DataFrame(load(File(format"CSV", "./package_requests_by_date.csv.gz")))
 end
 
